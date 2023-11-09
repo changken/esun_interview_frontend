@@ -46,7 +46,7 @@ export default {
                             <li>總應扣款金額: NT$ {{ item.TotalAmount }}</li>
                         </ul>
                     </p>
-                    <router-link to="/update" class="btn btn-warning d-inline-block mr-2">更新</router-link>
+                    <router-link :to="/update/+item.SN" class="btn btn-warning d-inline-block mr-2">更新</router-link>
                     <router-link to="/delete" class="btn btn-danger d-inline-block">刪除</router-link>
                 </div>
             </div>
