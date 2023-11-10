@@ -19,6 +19,13 @@ export default {
             msgStatus: -1,//0->primary, 1=>success, 2=>warning, 3=>error
             msg: '',
             msgClass: 'alert alert-primary',
+            verificationResult:{
+                userId: false,
+                userName: false,
+                email: false,
+                account: false,
+            
+            }
         }
     },
     methods:{
@@ -41,9 +48,17 @@ export default {
         add_user_form_on_submit(e){
             if(this.add_user_form.userName === '' || this.add_user_form.userId === '' || this.add_user_form.email === '' || this.add_user_form.account === ''){
                 this.msgStatus = 2;
-                this.msg = "請填寫表單!";
+                this.msg = "請確實填寫表單!";
                 return;
             }
+
+            if(!this.verificationResult.userId || !this.verificationResult.userName || !this.verificationResult.email || !this.verificationResult.account){
+                this.msgStatus = 2;
+                this.msg = "請填寫正確的表單!";
+                return;
+            }
+
+
             axios.post('/user', this.add_user_form).then(res=>{
                 this.msgStatus = 1;
                 this.msg = "使用者新增成功!";
@@ -72,17 +87,45 @@ export default {
     },
     watch:{
         "add_user_form.userId": function(val){
-            this.retrieve_user();
-            this.verificationResult =  /^[A-Z][12]\d{8}$/.test(val);
+            this.verificationResult.userId =  /^[A-Z][12]\d{8}$/.test(val);
+            if(!this.verificationResult.userId){
+                this.msgStatus = 2;
+                this.msg = "身分證格式錯誤!";
+            }else{
+                this.msgStatus = 1;
+                this.msg = "身分證格式正確!";
+                this.retrieve_user();
+            }
         },
         "add_user_form.userName": function(val){
-            this.verificationResult = val.length > 1 && val.length <= 20;
+            this.verificationResult.userName = /^[\u4e00-\u9fa5]{2,4}$/.test(val);
+            if(!this.verificationResult.userName){
+                this.msgStatus = 2;
+                this.msg = "姓名格式錯誤!(2~4個字元)";
+            }else{
+                this.msgStatus = 1;
+                this.msg = "姓名格式正確!";
+            }
         },
         "add_user_form.account": function(val){
-            this.verificationResult = /^\d{1,16}$/.test(val);
+            this.verificationResult.account = /^\d{8,14}$/.test(val);
+            if(!this.verificationResult.account){
+                this.msgStatus = 2;
+                this.msg = "帳號格式錯誤!(8~14個數字)";
+            }else{
+                this.msgStatus = 1;
+                this.msg = "帳號格式正確!";
+            }
         },
         "add_user_form.email": function(val){
-            this.verificationResult = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+            this.verificationResult.email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+            if(!this.verificationResult.email){
+                this.msgStatus = 2;
+                this.msg = "電子郵件格式錯誤!";
+            }else{
+                this.msgStatus = 1;
+                this.msg = "電子郵件格式正確!";
+            }
         },
         "msgStatus": function(val){
             this.msgClass = this.get_msg_status();
@@ -101,20 +144,19 @@ export default {
                 </div>
                 <div class="mb-3">
                     <label for="userId" class="form-label">使用者身分證字號:</label>
-                    <input type="text" class="form-control" id="userId" v-model="add_user_form.userId" maxlength="10">
+                    <input type="text" class="form-control" id="userId" v-model="add_user_form.userId" maxlength="10" placeholder="您的身分證字號">
                 </div>
                 <div class="mb-3">
                     <label for="userName" class="form-label">使用者姓名:</label>
-                    <input type="text" class="form-control" id="userName" v-model="add_user_form.userName" maxlength="20">
+                    <input type="text" class="form-control" id="userName" v-model="add_user_form.userName" minlength="2" maxlength="4" placeholder="您的姓名">
                 </div>
                 <div class="mb-3">
                     <label for="email" class="form-label">使用者電子郵件:</label>
-                    <input type="email" class="form-control" id="email" aria-describedby="emailHelp" v-model="add_user_form.email">
-                    <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+                    <input type="email" class="form-control" id="email" v-model="add_user_form.email" placeholder="example@example.com">
                 </div>
                 <div class="mb-3">
                     <label for="account" class="form-label">使用者預扣款帳號:</label>
-                    <input type="text" class="form-control" id="account" v-model="add_user_form.account" maxlength="16">
+                    <input type="text" class="form-control" id="account" v-model="add_user_form.account" minlength="8" maxlength="14" placeholder="8~14位數字">
                 </div>
                 <button type="button" class="btn btn-primary" v-on:click="add_user_form_on_submit()">新增</button>
             </form>

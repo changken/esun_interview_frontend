@@ -41,16 +41,26 @@ export default {
         },
         calc_total_amount(){
             this.add_form_data.totalAmount = this.add_form_data.orderAmount * this.product.price * (1+this.product.feeRate);
-            this.add_form_data.totalAmount.toFixed(2);
+            this.add_form_data.totalAmount.toFixed(3);
         },
         calc_total_fee(){
             this.add_form_data.totalFee = this.add_form_data.orderAmount * this.product.price * this.product.feeRate;
-            this.add_form_data.totalFee.toFixed(2);
+            this.add_form_data.totalFee.toFixed(3);
         },
         add_form_data_on_submit(e){
-            if(this.add_form_data.productNo==-999 || this.add_form_data.userId==-999 || this.add_form_data.orderAmount==0){
-                this.msgStatus = 1;
-                this.msg = "請先選擇好金融商品或使用者或選擇數量!";
+            if(this.add_form_data.productNo==-999 || this.add_form_data.productNo==-1){
+                this.msgStatus = 2;
+                this.msg = "請先選擇好金融商品!";
+                return;
+            }
+            if(this.add_form_data.userId==-999 || this.add_form_data.userId==-1){
+                this.msgStatus = 2;
+                this.msg = "請先選擇好使用者!";
+                return;
+            }
+            if(this.add_form_data.orderAmount==0){
+                this.msgStatus = 2;
+                this.msg = "請先選擇好選擇數量!";
                 return;
             }
             axios.put('/likelist/'+this.$route.params.id, this.add_form_data).then(res => {

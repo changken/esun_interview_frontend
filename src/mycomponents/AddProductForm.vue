@@ -11,21 +11,38 @@ export default {
         return {
             add_product_form:{
                 productName: '',
-                price: -1,
-                feeRate: -1,
+                price: 1,
+                feeRate: 0.00001,
             },
             msgStatus: -1,//0->primary, 1=>success, 2=>warning, 3=>error
             msg: '',
             msgClass: 'alert alert-primary',
+            verificationResult:{
+                productName: false,
+                price: false,
+                feeRate: false
+            }
         };
     },
     methods:{
         add_product_form_on_submit(e){
-            if(this.add_product_form.productName=='' || this.add_product_form.price==-1 || this.add_product_form.feeRate==-1){
+            if(this.add_product_form.productName=='' || !this.verificationResult.productName){
                 this.msgStatus = 2;
-                this.msg = "請先填寫好金融商品名稱或金融商品價格或手續費率!";
+                this.msg = "請先填寫好金融商品名稱!";
                 return;
             }
+
+            if(this.add_product_form.price==-1 || !this.verificationResult.price){
+                this.msgStatus = 2;
+                this.msg = "請先填寫好商品價格或檢查商品價格是否在1元~10兆之間!";
+                return;
+            }
+            if(this.add_product_form.feeRate==-1 || !this.verificationResult.feeRate){
+                this.msgStatus = 2;
+                this.msg = "請先填寫好商品手續費率或檢查商品手續費率是否在0.00001~0.99之間!";
+                return;
+            }
+
             axios.post('/product', this.add_product_form).then(res=>{
                 this.msgStatus = 1;
                 this.msg = "新增金融商品成功!";
@@ -55,6 +72,36 @@ export default {
     watch:{
         "msgStatus": function(val){
             this.msgClass = this.get_msg_status();
+        },
+        "add_product_form.productName": function(val){
+            this.verificationResult.productName = /^[\u4e00-\u9fa5a-zA-Z0-9]{1,254}$/.test(val);
+            if(!this.verificationResult.productName){
+                this.msgStatus = 2;
+                this.msg = "請先填寫好金融商品名稱!(1~254個中英文數字)";
+            }else{
+                this.msgStatus = 1;
+                this.msg = "金融商品名稱格式正確!";
+            }
+        },
+        "add_product_form.price": function(val){
+            this.verificationResult.price = this.add_product_form.price > 0 && this.add_product_form.price <= 1e13;
+            if(!this.verificationResult.price){
+                this.msgStatus = 2;
+                this.msg = "請先檢查金融商品價格是否在1元~10兆之間!";
+            }else{
+                this.msgStatus = 1;
+                this.msg ="金融商品價格格式正確!";
+            }
+        },
+        "add_product_form.feeRate": function(val){
+            this.verificationResult.feeRate = this.add_product_form.feeRate >= 0.00001 && this.add_product_form.feeRate <= 0.99
+            if(!this.verificationResult.feeRate){
+                this.msgStatus = 2;
+                this.msg = "請先檢查金融商品手續費率是否在0.00001~0.99之間!";
+            }else{
+                this.msgStatus = 1;
+                this.msg ="金融商品手續費率格式正確!";
+            }
         }
     }
 }
@@ -74,7 +121,7 @@ export default {
                 </div>
                 <div class="mb-3">
                     <label for="price" class="form-label">金融商品價格:</label>
-                    <input type="number" class="form-control" id="price" min="1" max="1000000000000" v-model="add_product_form.price">
+                    <input type="number" class="form-control" id="price" min="1" max="1000000000000" step="1" v-model="add_product_form.price">
                 </div>
                 <div class="mb-3">
                     <label for="feeRate">手續費率</label>
