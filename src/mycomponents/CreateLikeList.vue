@@ -88,9 +88,9 @@ export default {
                 axios.get('/product/' + val).then(res => {
                     this.product.price = res.data.price;
                     this.product.feeRate = res.data.feeRate;
+                    this.calc_total_amount();
+                    this.calc_total_fee();
                 });
-                this.calc_total_amount();
-                this.calc_total_fee();
             }
         },
         "add_form_data.userId": function(val){
@@ -128,6 +128,9 @@ export default {
                         <option value="-1">新增偏好金融商品</option>
                         <option v-for="product in products" v-bind:value="product.no">{{ product.no + ", " + product.productName }}</option>
                     </select>
+                </div>
+                <div class="mb-3" v-if="product.price">
+                    <router-link :to="/updateproduct/+add_form_data.productNo" class="btn btn-warning d-inline-block">編輯金融商品資訊</router-link>
                 </div>
                 <div class="mb-3" v-if="product.price">
                     <label for="price">商品價格:</label>

@@ -27,7 +27,7 @@ export default {
 </script>
 
 <template>
-    <div class="container"><!--v-on:click="retrieve_likelist"-->
+    <div class="container">
         <h1>列出所有偏好金融商品</h1>
         <div class="col-6 mb-2" v-for="item in likelist">
             <div class="card">
@@ -47,7 +47,7 @@ export default {
                         </ul>
                     </p>
                     <router-link :to="/update/+item.SN" class="btn btn-warning d-inline-block mr-2">更新</router-link>
-                    <router-link to="/delete" class="btn btn-danger d-inline-block">刪除</router-link>
+                    <router-link :to="/delete/+item.SN" class="btn btn-danger d-inline-block">刪除</router-link>
                 </div>
             </div>
         </div>

@@ -8,6 +8,7 @@ import ListLikeList from '../mycomponents/ListLikeList.vue'
 
 import AddUserForm from '../mycomponents/AddUserForm.vue';
 import AddProductForm from '../mycomponents/AddProductForm.vue';
+import UpdateProductForm from '../mycomponents/UpdateProductForm.vue';
 
 
 // 1. 定义路由组件.
@@ -25,6 +26,7 @@ const routes = [
   { path: '/query:id', name: 'query', component: QueryLikeList, props: true},
   { path: '/adduser', name: 'adduser', component: AddUserForm, props: true},
   { path: '/addproduct', name: 'addproduct', component: AddProductForm, props: true},
+  { path: '/updateproduct/:id', name: 'updateproduct', component: UpdateProductForm, props: true},
 ]
 
 // 3. 创建路由实例并传递 `routes` 配置
